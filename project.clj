@@ -12,7 +12,18 @@
                  [ring/ring-defaults "0.1.2"]
 
                  [javax.servlet/javax.servlet-api "3.1.0"]
-                 [info.sunng/ring-jetty9-adapter "0.7.2"]]
+                 [info.sunng/ring-jetty9-adapter "0.7.2"]
+
+                 ;; Frontend dependencies
+                 [org.clojure/clojurescript "0.0-2371"]]
 
   :source-paths ["src/clj"]
-  :main cljsworkshop.core)
+
+  :main cljsworkshop.core
+  :plugins [[lein-cljsbuild "1.0.3"]]
+  :cljsbuild {:builds
+              [{:id "app"
+                :source-paths ["src/cljs"]
+                :compiler {:output-to "resources/public/js/app.js"
+                           :optimizations :whitespace
+                           :pretty-print true}}]})
