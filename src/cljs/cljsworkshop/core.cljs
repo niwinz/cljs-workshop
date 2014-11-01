@@ -1,8 +1,10 @@
 (ns cljsworkshop.core
-  (:require-macros [secretary.core :refer [defroute]])
+  (:require-macros [secretary.core :refer [defroute]]
+                   [cljs.core.async.macros :refer [go]])
   (:require [goog.events :as events]
             [goog.dom :as dom]
-            [secretary.core :as secretary])
+            [secretary.core :as secretary]
+            [cljs.core.async :refer [<! put! chan]])
   (:import goog.History
            goog.Uri
            goog.net.Jsonp))
@@ -25,25 +27,31 @@
   (let [results (js->clj results)]
     (reduce (fn [acc result]
               (str acc "<li>" result "</li>"))
+            ""
             (second results))))
 
-(defn do-jsonp
-  [uri callback]
-  (let [req (Jsonp. (Uri. uri))]
-    (.send req nil callback)))
+(defn listen [el type]
+  (let [out (chan)]
+    (events/listen el type (fn [e] (put! out e)))
+    out))
+
+(defn jsonp [uri]
+  (let [out (chan)
+        req (Jsonp. (Uri. uri))]
+    (.send req nil (fn [res] (put! out res)))
+    out))
 
 (defroute home-path "/" []
+  ;; Render initial html
   (set-html! app home-html)
-  (let [on-response     (fn [results]
-                          (let [html (render-results results)]
-                            (set-html! (dom/getElement "results") html)))
 
-        on-search-click (fn [e]
-                          (let [userquery (.-value (dom/getElement "query"))
-                                searchuri (str search-url userquery)]
-                            (do-jsonp searchuri on-response)))]
-
-    (events/listen (dom/getElement "searchbutton") "click" on-search-click)))
+  (let [clicks (listen (dom/getElement "searchbutton") "click")]
+    (go (while true
+          (<! clicks)
+          (let [uri     (str search-url (.-value (dom/getElement "query")))
+                results (<! (jsonp uri))]
+            (set-html! (dom/getElement "results")
+                       (render-results results)))))))
 
 (defroute "*" []
   (set-html! app "<h1>Not Found</h1>"))
