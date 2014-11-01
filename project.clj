@@ -15,7 +15,8 @@
                  [info.sunng/ring-jetty9-adapter "0.7.2"]
 
                  ;; Frontend dependencies
-                 [org.clojure/clojurescript "0.0-2371"]]
+                 [org.clojure/clojurescript "0.0-2371"]
+                 [secretary "1.2.1"]]
 
   :source-paths ["src/clj"]
 

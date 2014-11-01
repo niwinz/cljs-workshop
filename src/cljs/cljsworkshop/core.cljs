@@ -1,22 +1,38 @@
 (ns cljsworkshop.core
+  (:require-macros [secretary.core :refer [defroute]])
   (:require [goog.events :as events]
-            [goog.dom :as dom]))
+            [goog.dom :as dom]
+            [secretary.core :as secretary])
+  (:import goog.History))
+
+
+(def app (dom/getElement "app"))
+
+(defn set-html! [el content]
+  (set! (.-innerHTML el) content))
+
+(defroute home-path "/" []
+  (set-html! app "<h1>Hello World from home page.</h1>"))
+
+(defroute some-path "/:param" [param]
+  (let [message (str "<h1>Parameter in url: <small>" param "</small>!</h1>")]
+    (set-html! app message)))
+
+(defroute "*" []
+  (set-html! app "<h1>Not Found</h1>"))
 
 (defn main
   []
-  (let [counter  (atom 0)
-        button  (dom/getElement "button")
-        display (dom/getElement "clicksnumber")]
+  ;; Set secretary config for use the hashbang prefix
+  (secretary/set-config! :prefix "#")
 
-    ;; Set initial value
-    (set! (.-innerHTML display) @counter)
-
-    ;; Assign event listener
-    (events/listen button "click"
+  ;; Attach event listener to history instance.
+  (let [history (History.)]
+    (events/listen history "navigate"
                    (fn [event]
-                     ;; Increment the value
-                     (swap! counter inc)
-                     ;; Set new value in display element
-                     (set! (.-innerHTML display) @counter)))))
+                     (secretary/dispatch! (.-token event))))
+    (.setEnabled history true)))
 
 (main)
+
+
