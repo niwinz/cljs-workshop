@@ -9,7 +9,6 @@
            goog.Uri
            goog.net.Jsonp))
 
-
 (def app (dom/getElement "app"))
 (def search-url "http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=")
 (def home-html
