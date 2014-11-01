@@ -1,6 +1,5 @@
 (ns cljsworkshop.core
   (:require [ring.adapter.jetty9 :refer [run-jetty]]
-            [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [compojure.response :refer [render]]
@@ -13,7 +12,6 @@
   [req]
   (render (io/resource "index.html") req))
 
-
 ;; Routes definition
 (defroutes app
   (GET "/" [] home)
@@ -23,9 +21,7 @@
 ;; Application entry point
 (defn -main
   [& args]
-  (-> app
-      (wrap-defaults api-defaults)
-      (run-jetty {:port 5050})))
+  (run-jetty app {:port 5050}))
 
 
 
