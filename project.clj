@@ -17,7 +17,9 @@
 
                  ;; Frontend dependencies
                  [org.clojure/clojurescript "0.0-2371"]
-                 [secretary "1.2.1"]]
+                 [secretary "1.2.1"]
+                 [sablono "0.2.22"]
+                 [om "0.8.0-alpha1"]]
 
   :source-paths ["src/clj"]
 
@@ -28,6 +30,7 @@
                 :source-paths ["src/cljs"]
                 :compiler {:optimizations :whitespace
                            :pretty-print true
+                           :preamble ["react/react.min.js"]
                            :output-to "resources/public/js/app.js"
                            ;; :output-dir "resources/public/js/"
                            ;; :source-map "resources/public/js/app.js.map"
