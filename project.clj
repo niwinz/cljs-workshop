@@ -19,7 +19,8 @@
                  [org.clojure/clojurescript "0.0-2371"]
                  [secretary "1.2.1"]
                  [sablono "0.2.22"]
-                 [om "0.8.0-alpha1"]]
+                 [om "0.8.0-alpha2"]
+                 [prismatic/om-tools "0.3.6"]]
 
   :source-paths ["src/clj"]
 

@@ -20,4 +20,5 @@
                      (secretary/dispatch! (.-token event))))
     (.setEnabled history true)))
 
+(enable-console-print!)
 (main)

@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [goog.events :as events]
             [goog.dom :as dom]
-            [cljs.core.async :refer [<! put! chan timeout]])
+            [cljs.core.async :refer [<! >! put! chan timeout alts!]])
   (:import goog.History
            goog.Uri
            goog.net.XhrIo
@@ -36,29 +36,28 @@
                      (let [response (.getResponseJson (.-target res))]
                        (put! out response))))
     (.send req uri)
-    ;; (fn [res] (put! out res)))
     out))
-
 (defn throttle
   ([source msecs]
-     (throttle (chan) source msecs))
+    (throttle (chan) source msecs))
   ([c source msecs]
-     (go
-       (loop [state ::init last nil cs [source]]
-         (let [[_ sync] cs]
+    (go
+      (loop [state ::init last nil cs [source]]
+        (let [[_ sync] cs]
           (let [[v sc] (alts! cs)]
             (condp = sc
               source (condp = state
                        ::init (do (>! c v)
-                                  (recur ::throttling last
-                                         (conj cs (timeout msecs))))
+                                (recur ::throttling last
+                                  (conj cs (timeout msecs))))
                        ::throttling (recur state v cs))
               sync (if last
                      (do (>! c last)
-                         (recur state nil
-                                (conj (pop cs) (timeout msecs))))
+                       (recur state nil
+                         (conj (pop cs) (timeout msecs))))
                      (recur ::init last (pop cs))))))))
-     c))
+    c))
+
 
 (defn debounce
   ([source msecs]
