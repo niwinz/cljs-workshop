@@ -6,6 +6,7 @@
   (:import goog.History))
 
 (defroute home-path "/" [] (ctrl/home-controller))
+(defroute phone-detail-path #"/([\w\-]+)" [id] (ctrl/phone-controller id))
 (defroute "*" [] (ctrl/not-found-controller))
 
 (defn main
@@ -20,5 +21,4 @@
                      (secretary/dispatch! (.-token event))))
     (.setEnabled history true)))
 
-(enable-console-print!)
 (main)

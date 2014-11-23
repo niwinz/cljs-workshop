@@ -11,9 +11,14 @@
 (enable-console-print!)
 
 ;; State of the application
-(def state (atom {:search ""}))
+(defonce state
+  (atom {:search ""
+         :results []
+         :detailcache {}
+         :details {}
+         }))
 
-(defn- search
+(defn- match-string
   [source searchstring]
   (let [source       (str (.toLowerCase (get source "name"))
                           (.toLowerCase (get source "snippet")))
@@ -37,7 +42,7 @@
       (go
         (let [events  (-> (om/get-state owner :events)
                           (throttle 1000))
-              results (<! (utils/xhr "/static/phones/phones.json"))
+              results (<! (xhr "/static/phones/phones.json"))
               results (js->clj results)]
 
           ;; Set initial state
@@ -48,7 +53,7 @@
             (let [val (<! events)]
               (if (empty? val)
                 (om/transact! app #(assoc % :results results))
-                (let [filtered (filter #(search % val) results)]
+                (let [filtered (filter #(match-string % val) results)]
                   (om/transact! app #(assoc % :results filtered)))))
             (recur)))))
 
@@ -74,12 +79,67 @@
              [:ul (for [item (:results app)]
                     (let [id (get item "id")
                           name (get item "name")]
-                      [:li {:id id} name]))])]]]]))))
+                      [:li {:id id}
+                       [:a {:href (str "/#/" id)} name]]))])]]]]))))
+
+
+(defn phone-detail
+  [app owner]
+  (reify
+    om/IDisplayName
+    (display-name [_]
+      "phone-detail")
+
+    om/IInitState
+    (init-state [_]
+      {:data nil})
+
+    om/IWillMount
+    (will-mount [_]
+      (go
+        (let [phoneid (om/get-state owner :phoneid)
+              data    (get-in @app [:detailcache phoneid] nil)]
+          (if (nil? data)
+            (let [data (<! (xhr (str "/static/phones/" (name phoneid) ".json")))
+                  data (js->clj data)]
+              ;; (.log js/console "data loaded" (clj->js data))
+              (om/transact! app #(assoc-in % [:detailcache phoneid] data))
+              (om/set-state! owner :data data))
+            (om/set-state! owner :data data)))))
+
+    om/IRenderState
+    (render-state [_ {:keys [phoneid data] :as state}]
+      (.log js/console "render state" (clj->js state))
+      (if (nil? data)
+        (html [:div "loading..."])
+        (let [imgsrc (str "/static/" (first (get data "images")))]
+          (html
+           [:section {:class "container"}
+            [:h1 (get data "name")]
+            [:section {:class "photos"}
+             [:section {:class "main-photo"}
+              [:img {:src imgsrc}]]
+             [:section {:class "other-photos"}
+              (for [img (rest (get data "images"))]
+                (let [imgsrc (str "/static/" img)]
+                  [:img {:src imgsrc :width "100"}]))]]]))))))
+
 
 (defn home-controller
   []
   (let [app (gdom/getElement "app")]
     (om/root phones-search state {:target app})))
+                                  ;; :instrument
+                                  ;; (fn [f cursor m]
+                                  ;;   (.log js/console "instrument" (clj->js cursor))
+                                  ;;   (.log js/console "instrument" (clj->js m))
+                                  ;;   ::om/pass)})))
+
+(defn phone-controller
+  [phoneid]
+  (let [app (gdom/getElement "app")
+        phoneid (keyword phoneid)]
+    (om/root phone-detail state {:target app :init-state {:phoneid phoneid}})))
 
 (defn not-found-controller
   []
