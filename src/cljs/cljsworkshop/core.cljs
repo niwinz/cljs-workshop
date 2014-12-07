@@ -1,6 +1,7 @@
 (ns cljsworkshop.core
   (:require-macros [secretary.core :refer [defroute]])
   (:require [goog.events :as events]
+            [goog.dom :as gdom]
             [secretary.core :as secretary]
             [cljsworkshop.controllers :as ctrl])
   (:import goog.History))
@@ -18,6 +19,8 @@
   (let [history (History.)]
     (events/listen history "navigate"
                    (fn [event]
+                     (let [el (gdom/getElement "app")]
+                       (.log js/console ":navigate:" el (.-children el)))
                      (secretary/dispatch! (.-token event))))
     (.setEnabled history true)))
 
