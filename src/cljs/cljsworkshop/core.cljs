@@ -1,27 +1,33 @@
 (ns cljsworkshop.core
-  (:require-macros [secretary.core :refer [defroute]])
-  (:require [goog.events :as events]
+  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
+  (:require [clojure.string :as str]
             [goog.dom :as gdom]
-            [secretary.core :as secretary]
-            [cljsworkshop.controllers :as ctrl])
-  (:import goog.History))
+            [goog.events :as events]
+            [cljs.core.async :refer [<! put! chan]]
+            [om.core :as om :include-macros true]
+            [sablono.core :as html :refer-macros [html]]))
 
-(defroute home-path "/" [] (ctrl/home-controller))
-(defroute phone-detail-path #"/([\w\-]+)" [id] (ctrl/phone-controller id))
-(defroute "*" [] (ctrl/not-found-controller))
+(enable-console-print!)
 
-(defn main
-  []
-  ;; Set secretary config for use the hashbang prefix
-  (secretary/set-config! :prefix "#")
+(defonce state {:message "Hello world from global state."})
 
-  ;; Attach event listener to history instance.
-  (let [history (History.)]
-    (events/listen history "navigate"
-                   (fn [event]
-                     (let [el (gdom/getElement "app")]
-                       (.log js/console ":navigate:" el (.-children el)))
-                     (secretary/dispatch! (.-token event))))
-    (.setEnabled history true)))
+(defn mycomponent
+  [app owner]
+  (reify
+    om/IDisplayName
+    (display-name [_]
+      "my-component")
 
-(main)
+    om/IInitState
+    (init-state [_]
+      {:message "Hello world from local state"})
+
+    om/IRenderState
+    (render-state [_ {:keys [message]}]
+      (html [:section
+             [:div message]
+             [:div (:message app)]]))))
+
+
+(let [el (gdom/getElement "app")]
+  (om/root mycomponent state {:target el}))
