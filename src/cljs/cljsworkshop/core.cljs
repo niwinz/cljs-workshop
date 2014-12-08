@@ -5,13 +5,13 @@
             [goog.events :as events]
             [cljs.core.async :refer [<! put! chan]]
             [om.core :as om :include-macros true]
+            [hodgepodge.core :refer [local-storage]]
             [sablono.core :as html :refer-macros [html]]))
 
 (enable-console-print!)
 
 (defonce tasklist-state (atom {:entries []}))
-(defonce undo-state (atom {:entries [@tasklist-state]
-                           :index nil}))
+(defonce undo-state (atom {:entries [@tasklist-state]}))
 
 (add-watch tasklist-state :history
   (fn [_ _ _ n]
@@ -21,6 +21,20 @@
         (swap! undo-state
                (fn [state]
                  (update-in state [:entries] conj n)))))))
+
+
+;; Get the persisted state, and if it exists
+;; restore it on tasklist and undo states.
+(when-let [state (:taskliststate local-storage)]
+  (reset! tasklist-state state)
+  (reset! undo-state {:entries [state]}))
+
+;; Watch tasklist-state changes and
+;; persists them in local storega.
+(add-watch tasklist-state :persistece
+  (fn [_ _ _ n]
+    (println "Event:" n)
+    (assoc! local-storage :taskliststate n)))
 
 (defn taskitem
   [task owner]
@@ -66,7 +80,7 @@
                                 (let [input (-> (.-target e)
                                                 (.querySelector "[name=subject]"))
                                       task  {:subject (.-value input)
-                                             :id (swap! counter inc)
+                                             :created-at (.toISOString (js/Date.))
                                              :completed false}]
 
                                   ;; Set the input to empty value
@@ -86,7 +100,7 @@
            (if (empty? entries)
              [:span "No items on the task list..."]
              [:ul (for [item entries]
-                    (om/build taskitem item {:key :id}))])]])))))
+                    (om/build taskitem item {:key :created-at}))])]])))))
 
 
 (defn do-undo
