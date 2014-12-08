@@ -30,7 +30,7 @@
   (reset! undo-state {:entries [state]}))
 
 ;; Watch tasklist-state changes and
-;; persists them in local storega.
+;; persists them in local storege.
 (add-watch tasklist-state :persistece
   (fn [_ _ _ n]
     (println "Event:" n)
