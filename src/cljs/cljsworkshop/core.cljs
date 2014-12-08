@@ -88,6 +88,17 @@
              [:ul (for [item entries]
                     (om/build taskitem item {:key :id}))])]])))))
 
+
+(defn do-undo
+  [app]
+  (when (> (count (:entries @app)) 1)
+    ;; remove the last spapshot from the undo list.
+    (om/transact! app :entries pop)
+
+    ;; Restore the last snapshot into tasklist
+    ;; application state
+    (reset! tasklist-state (last (:entries @undo-state)))))
+
 (defn undo
   [app owner]
   (reify
@@ -98,10 +109,7 @@
                                :border "1px solid #ddd"}}
         [:section.buttons
          [:input {:type "button" :default-value "Undo"
-                  :on-click (fn [event]
-                              (when (> (count (:entries @app)) 1)
-                                (om/transact! app :entries pop)
-                                (reset! tasklist-state (last (:entries @undo-state)))))}]]]))))
+                  :on-click (fn [_] (do-undo app))}]]]))))
 
 (let [undoel (gdom/getElement "undo")
       tasklistel (gdom/getElement "tasklist")]
