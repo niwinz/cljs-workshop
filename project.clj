@@ -14,6 +14,8 @@
 
                  [javax.servlet/javax.servlet-api "3.1.0"]
                  [info.sunng/ring-jetty9-adapter "0.7.2"]
+                 [com.cemerick/piggieback "0.1.3"]
+                 [weasel "0.4.2"]
 
                  ;; Frontend dependencies
                  [org.clojure/clojurescript "0.0-2411"]
@@ -23,7 +25,7 @@
                  [hodgepodge "0.1.0"]]
 
   :source-paths ["src/clj"]
-
+  :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
   :main cljsworkshop.core
   :plugins [[lein-cljsbuild "1.0.3"]]
   :cljsbuild {:builds
