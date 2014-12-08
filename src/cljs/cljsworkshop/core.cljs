@@ -22,6 +22,24 @@
                (fn [state]
                  (update-in state [:entries] conj n)))))))
 
+(defn taskitem
+  [task owner]
+  (reify
+    om/IDisplayName
+    (display-name [_]
+      "taskitem")
+
+    om/IRender
+    (render [_]
+      (let [subject (:subject task)
+            completed? (:completed task)]
+        (html
+         [:li {:on-click (fn [_] (om/transact! task :completed #(not %)))}
+          (if completed?
+           [:span {:style {:text-decoration "line-through"}} subject]
+           [:span subject])])))))
+
+
 (defn tasklist
   [app owner]
   (reify
@@ -29,8 +47,12 @@
     (display-name [_]
       "tasklist")
 
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:counter (atom 1)})
+
+    om/IRenderState
+    (render-state [_ {:keys [counter]}]
       (let [entries (:entries app)]
         (html
          [:section {:style {:margin-top "20px"
@@ -44,24 +66,27 @@
                                 (let [input (-> (.-target e)
                                                 (.querySelector "[name=subject]"))
                                       task  {:subject (.-value input)
-                                             :state :todo}]
+                                             :id (swap! counter inc)
+                                             :completed false}]
+
+                                  ;; Set the input to empty value
                                   (set! (.-value input) "")
+
+                                  ;; Append the previously defined task
+                                  ;; to the task list entries on global
+                                  ;; state atom.
                                   (om/transact! app :entries #(conj % task))))}
             [:input {:type "text"
                      :name "subject"
                      :placeholder "Write your task name..."}]
             [:input {:type "submit"
                      :defaultValue "Foo"}]]]
+
           [:section.list {:style {:margin-top "10px"}}
            (if (empty? entries)
              [:span "No items on the task list..."]
-             [:ul
-              (for [item entries]
-                (condp = (:state item)
-                  :done [:li {:style {:text-decoration "line-through"}}
-                         (:subject item)]
-                  :todo [:li (:subject item)]))])]])))))
-
+             [:ul (for [item entries]
+                    (om/build taskitem item {:key :id}))])]])))))
 
 (defn undo
   [app owner]
