@@ -1,6 +1,7 @@
 (ns cljsworkshop.core
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
-  (:require [clojure.string :as str]
+  (:require [cljsjs.react :as react]
+            [clojure.string :as str]
             [goog.dom :as gdom]
             [goog.events :as events]
             [cljs.core.async :refer [<! put! chan]]
