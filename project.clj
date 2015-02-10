@@ -10,8 +10,8 @@
                  [compojure "1.3.1"]
 
                  ;; Frontend dependencies
-                 [org.clojure/clojurescript "0.0-2371"]
-                 [secretary "1.2.1"]]
+                 [secretary "1.2.1"]
+                 [org.clojure/clojurescript "0.0-2816"]
 
                  [ring/ring-core "1.3.2" :exclusions [javax.servlet/servlet-api]]
                  [ring/ring-servlet "1.3.2" :exclusions [javax.servlet/servlet-api]]
@@ -22,13 +22,14 @@
   :source-paths ["src/clj"]
 
   :main cljsworkshop.core
-  :plugins [[lein-cljsbuild "1.0.3"]]
+  :plugins [[lein-cljsbuild "1.0.4"]]
   :cljsbuild {:builds
               [{:id "app"
                 :source-paths ["src/cljs"]
-                :compiler {:optimizations :whitespace
-                           :pretty-print true
-                           :output-to "resources/public/js/app.js"
-                           ;; :output-dir "resources/public/js/"
-                           ;; :source-map "resources/public/js/app.js.map"
-                           }}]})
+                :compiler {:output-to "resources/public/js/app.js"
+                           :output-dir "resources/public/js/out"
+                           :source-map true
+                           :optimizations :none
+                           :asset-path "/static/js/out"
+                           :main "cljsworkshop.core"
+                           :pretty-print true}}]})
