@@ -1,6 +1,6 @@
 (ns cljsworkshop.core
-  (:require [ring.adapter.jetty9 :refer [run-jetty]]
-            [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
+  (:require [qbits.jet.server :refer [run-jetty]]
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [compojure.response :refer [render]]
@@ -17,9 +17,8 @@
 
 (defn -main
   [& args]
-  (-> app
-      (wrap-defaults api-defaults)
-      (run-jetty {:port 5050})))
+  (let [app (wrap-defaults app site-defaults)]
+    (run-jetty {:ring-handler app :port 5050})))
 
 
 

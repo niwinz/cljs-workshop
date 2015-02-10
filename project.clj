@@ -6,13 +6,13 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
 
                  ;; Backend dependencies
-                 [compojure "1.2.1"]
-                 [ring/ring-core "1.3.1" :exclusions [javax.servlet/servlet-api]]
-                 [ring/ring-servlet "1.3.1" :exclusions [javax.servlet/servlet-api]]
-                 [ring/ring-defaults "0.1.2"]
+                 [compojure "1.3.1"]
 
-                 [javax.servlet/javax.servlet-api "3.1.0"]
-                 [info.sunng/ring-jetty9-adapter "0.7.2"]]
+                 [ring/ring-core "1.3.2" :exclusions [javax.servlet/servlet-api]]
+                 [ring/ring-servlet "1.3.2" :exclusions [javax.servlet/servlet-api]]
+                 [ring/ring-defaults "0.1.2" :exclusions [javax.servlet/servlet-api]]
+
+                 [cc.qbits/jet "0.5.4"]]
 
   :source-paths ["src/clj"]
   :main cljsworkshop.core)
