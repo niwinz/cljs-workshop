@@ -12,7 +12,7 @@
                  [compojure "1.3.1"]
 
                  [hodgepodge "0.1.3"]
-                 [sablono "0.2.22"]
+                 [sablono "0.3.1"]
                  [org.omcljs/om "0.8.8"]
                  [prismatic/om-tools "0.3.6"]
                  [secretary "1.2.1"]
