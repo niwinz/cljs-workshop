@@ -7,8 +7,6 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
 
                  ;; Backend dependencies
-                 [com.cemerick/piggieback "0.1.5"]
-                 [weasel "0.6.0-SNAPSHOT"]
                  [compojure "1.3.1"]
 
                  [hodgepodge "0.1.3"]
@@ -25,7 +23,6 @@
                  [cc.qbits/jet "0.5.4"]]
 
   :source-paths ["src/clj", "src/cljs"]
-  :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
   :main cljsworkshop.core
   :plugins [[lein-cljsbuild "1.0.4"]]
   :cljsbuild {:builds
