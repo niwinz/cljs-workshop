@@ -24,7 +24,7 @@
 
                  [cc.qbits/jet "0.5.4"]]
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "src/cljs"]
   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
   :main cljsworkshop.core
   :plugins [[lein-cljsbuild "1.0.4"]]

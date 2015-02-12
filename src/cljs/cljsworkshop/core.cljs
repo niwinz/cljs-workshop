@@ -7,11 +7,11 @@
             [cljs.core.async :refer [<! put! chan]]
             [om.core :as om :include-macros true]
             [hodgepodge.core :refer [local-storage]]
-            [weasel.repl :as ws-repl]
+            [clojure.browser.repl :as repl]
             [sablono.core :as html :refer-macros [html]]))
 
 (enable-console-print!)
-(ws-repl/connect "ws://localhost:9001")
+(repl/connect "http://localhost:9000/repl")
 
 (defonce tasklist-state (atom {:entries []}))
 (defonce undo-state (atom {:entries [@tasklist-state]}))
