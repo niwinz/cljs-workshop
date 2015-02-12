@@ -24,17 +24,38 @@
 
                  [cc.qbits/jet "0.5.4"]]
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj", "src/cljs"]
   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
   :main cljsworkshop.core
   :plugins [[lein-cljsbuild "1.0.4"]]
   :cljsbuild {:builds
-              [{:id "app"
+              [{:id "devel"
                 :source-paths ["src/cljs"]
                 :compiler {:output-to "resources/public/js/app.js"
-                           :output-dir "resources/public/js/out"
+                           :output-dir "resources/public/js/out-devel"
                            :source-map true
+                           :foreign-libs [{:file "js/moment.js"
+                                           :file-min "js/moment.min.js"
+                                           :provides ["cljsworkshop.moment"]}]
+                           :externs ["js/moment.min.js"]
                            :optimizations :none
+                           :cache-analysis true
                            :asset-path "/static/js/out"
-                           :main "cljsworkshop.core"
-                           :pretty-print true}}]})
+                           :main cljsworkshop.core
+                           :pretty-print true}}
+               {:id "prod"
+                :source-paths ["src/cljs"]
+                :compiler {:output-to "resources/public/js/app.js"
+                           :output-dir "resources/public/js/out-prod"
+                           :source-map "resources/public/js/app.js.map"
+                           :foreign-libs [{:file "js/moment.js"
+                                           :file-min "js/moment.min.js"
+                                           :provides ["cljsworkshop.moment"]}]
+                           :externs ["js/moment.min.js"]
+                           :closure-warnings {:externs-validation :off}
+                           :optimizations :advanced
+                           :cache-analysis true
+                           :asset-path "/static/js/out"
+                           :main cljsworkshop.core
+                           :pretty-print false}}]})
+
