@@ -36,8 +36,8 @@
                                            :provides ["cljsworkshop.moment"]}]
                            :externs ["js/moment.min.js"]
                            :optimizations :none
-                           :cache-analysis true
-                           :asset-path "/static/js/out"
+                           :cache-analysis false
+                           :asset-path "/static/js/out-devel"
                            :main cljsworkshop.core
                            :pretty-print true}}
                {:id "prod"
@@ -52,7 +52,7 @@
                            :closure-warnings {:externs-validation :off}
                            :optimizations :advanced
                            :cache-analysis false
-                           :asset-path "/static/js/out"
+                           :asset-path "/static/js/out-prod"
                            :main cljsworkshop.core
                            :pretty-print false}}]})
 
