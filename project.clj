@@ -31,10 +31,6 @@
                 :compiler {:output-to "resources/public/js/app.js"
                            :output-dir "resources/public/js/out-devel"
                            :source-map true
-                           :foreign-libs [{:file "js/moment.js"
-                                           :file-min "js/moment.min.js"
-                                           :provides ["cljsworkshop.moment"]}]
-                           :externs ["js/moment.min.js"]
                            :optimizations :none
                            :cache-analysis true
                            :asset-path "/static/js/out"
@@ -45,10 +41,6 @@
                 :compiler {:output-to "resources/public/js/app.js"
                            :output-dir "resources/public/js/out-prod"
                            :source-map "resources/public/js/app.js.map"
-                           :foreign-libs [{:file "js/moment.js"
-                                           :file-min "js/moment.min.js"
-                                           :provides ["cljsworkshop.moment"]}]
-                           :externs ["js/moment.min.js"]
                            :closure-warnings {:externs-validation :off}
                            :optimizations :advanced
                            :cache-analysis true
