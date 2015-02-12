@@ -1,6 +1,7 @@
 (ns cljsworkshop.core
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [cljsjs.react :as react]
+            [cljsworkshop.moment :as mom]
             [clojure.string :as str]
             [goog.dom :as gdom]
             [goog.events :as events]
@@ -13,6 +14,7 @@
 (enable-console-print!)
 (ws-repl/connect "ws://localhost:9001")
 
+
 (defonce tasklist-state (atom {:entries []}))
 (defonce undo-state (atom {:entries [@tasklist-state]}))
 
@@ -24,7 +26,6 @@
         (swap! undo-state
                (fn [state]
                  (update-in state [:entries] conj n)))))))
-
 
 ;; Get the persisted state, and if it exists
 ;; restore it on tasklist and undo states.
@@ -55,7 +56,6 @@
           (if completed?
            [:span {:style {:text-decoration "line-through"}} subject]
            [:span subject])])))))
-
 
 (defn tasklist
   [app owner]
