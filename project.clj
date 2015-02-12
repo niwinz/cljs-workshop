@@ -32,8 +32,8 @@
                            :output-dir "resources/public/js/out-devel"
                            :source-map true
                            :optimizations :none
-                           :cache-analysis true
-                           :asset-path "/static/js/out"
+                           :cache-analysis false
+                           :asset-path "/static/js/out-devel"
                            :main cljsworkshop.core
                            :pretty-print true}}
                {:id "prod"
@@ -43,8 +43,8 @@
                            :source-map "resources/public/js/app.js.map"
                            :closure-warnings {:externs-validation :off}
                            :optimizations :advanced
-                           :cache-analysis true
-                           :asset-path "/static/js/out"
+                           :cache-analysis false
+                           :asset-path "/static/js/out-prod"
                            :main cljsworkshop.core
                            :pretty-print false}}]})
 
