@@ -1,14 +1,14 @@
 (ns cljsworkshop.core
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [cljsjs.react :as react]
-            [cljsworkshop.moment :as mom]
             [clojure.string :as str]
             [goog.dom :as gdom]
             [goog.events :as events]
             [cljs.core.async :refer [<! put! chan]]
             [om.core :as om :include-macros true]
             [hodgepodge.core :refer [local-storage]]
-            [sablono.core :as html :refer-macros [html]]))
+            [sablono.core :as html :refer-macros [html]]
+            [cljsworkshop.moment :as moment]))
 
 (enable-console-print!)
 

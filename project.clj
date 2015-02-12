@@ -51,7 +51,7 @@
                            :externs ["js/moment.min.js"]
                            :closure-warnings {:externs-validation :off}
                            :optimizations :advanced
-                           :cache-analysis true
+                           :cache-analysis false
                            :asset-path "/static/js/out"
                            :main cljsworkshop.core
                            :pretty-print false}}]})
