@@ -22,7 +22,7 @@
 
                  [cc.qbits/jet "0.5.4"]]
 
-  :source-paths ["src/clj", "src/cljs"]
+  :source-paths ["src/clj" "src/cljs"]
   :main cljsworkshop.core
   :plugins [[lein-cljsbuild "1.0.4"]]
   :cljsbuild {:builds
