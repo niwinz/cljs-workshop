@@ -57,6 +57,23 @@
            [:span subject])])))))
 
 
+(defn form-submit
+  [app counter event]
+  (.preventDefault event)
+  (let [input (-> (.-target event)
+                  (.querySelector "[name=subject]"))
+        task  {:subject (.-value input)
+               :id (swap! counter inc)
+               :completed false}]
+
+    ;; Set the input to empty value
+    (set! (.-value input) "")
+
+    ;; Append the previously defined task
+    ;; to the task list entries on global
+    ;; state atom.
+    (om/transact! app :entries #(conj % task))))
+
 (defn tasklist
   [app owner]
   (reify
@@ -78,33 +95,17 @@
           [:section.title
            [:strong "Task list:"]]
           [:section.input
-           [:form {:on-submit (fn [e]
-                                (.preventDefault e)
-                                (let [input (-> (.-target e)
-                                                (.querySelector "[name=subject]"))
-                                      task  {:subject (.-value input)
-                                             :created-at (.toISOString (js/Date.))
-                                             :completed false}]
-
-                                  ;; Set the input to empty value
-                                  (set! (.-value input) "")
-
-                                  ;; Append the previously defined task
-                                  ;; to the task list entries on global
-                                  ;; state atom.
-                                  (om/transact! app :entries #(conj % task))))}
+           [:form {:on-submit #(form-submit app counter %)}
             [:input {:type "text"
                      :name "subject"
                      :placeholder "Write your task name..."}]
             [:input {:type "submit"
                      :defaultValue "Foo"}]]]
-
           [:section.list {:style {:margin-top "10px"}}
            (if (empty? entries)
              [:span "No items on the task list..."]
              [:ul (for [item entries]
                     (om/build taskitem item {:key :created-at}))])]])))))
-
 
 (defn do-undo
   [app]
