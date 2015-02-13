@@ -9,12 +9,12 @@
                  ;; Backend dependencies
                  [compojure "1.3.1"]
 
-                 [hodgepodge "0.1.3"]
-                 [sablono "0.3.1"]
+                 ;; Frontend dependencies
                  [org.omcljs/om "0.8.8"]
-                 [prismatic/om-tools "0.3.6"]
+                 [prismatic/om-tools "0.3.10"]
                  [secretary "1.2.1"]
-                 [org.clojure/clojurescript "0.0-2816"]
+                 [org.clojure/clojurescript "0.0-2843"]
+                 [hodgepodge "0.1.3"]
 
                  [ring/ring-core "1.3.2" :exclusions [javax.servlet/servlet-api]]
                  [ring/ring-servlet "1.3.2" :exclusions [javax.servlet/servlet-api]]
@@ -23,6 +23,7 @@
                  [cc.qbits/jet "0.5.4"]]
 
   :source-paths ["src/clj" "src/cljs"]
+
   :main cljsworkshop.core
   :plugins [[lein-cljsbuild "1.0.4"]]
   :cljsbuild {:builds
@@ -47,4 +48,3 @@
                            :asset-path "/static/js/out-prod"
                            :main cljsworkshop.core
                            :pretty-print false}}]})
-
