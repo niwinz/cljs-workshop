@@ -11,7 +11,7 @@
 
                  ;; Frontend dependencies
                  [secretary "1.2.1"]
-                 [org.clojure/clojurescript "0.0-2816"]
+                 [org.clojure/clojurescript "0.0-2843"]
 
                  [ring/ring-core "1.3.2" :exclusions [javax.servlet/servlet-api]]
                  [ring/ring-servlet "1.3.2" :exclusions [javax.servlet/servlet-api]]
