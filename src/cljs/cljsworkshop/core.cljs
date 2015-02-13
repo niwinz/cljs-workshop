@@ -6,7 +6,7 @@
             [goog.events :as events]
             [cljs.core.async :refer [<! put! chan]]
             [om.core :as om]
-            [om.dom :as dom]))
+            [om-tools.dom :as dom]))
 
 (enable-console-print!)
 
@@ -26,8 +26,8 @@
     om/IRenderState
     (render-state [_ {:keys [message]}]
       (dom/section
-        (dom/div nil message)
-        (dom/div nil (:message app))))))
+        (dom/div message)
+        (dom/div (:message app))))))
 
 (let [el (gdom/getElement "app")]
   (om/root mycomponent state {:target el}))
