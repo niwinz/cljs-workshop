@@ -5,8 +5,8 @@
             [goog.dom :as gdom]
             [goog.events :as events]
             [cljs.core.async :refer [<! put! chan]]
-            [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.core :as om]
+            [om-tools.dom :as dom]))
 
 (enable-console-print!)
 
@@ -34,11 +34,10 @@
     (render [_]
       (let [subject (:subject task)
             completed? (:completed task)]
-        (html
-         [:li {:on-click (fn [_] (om/transact! task :completed #(not %)))}
+        (dom/li {:on-click (fn [_] (om/transact! task :completed #(not %)))}
           (if completed?
-           [:span {:style {:text-decoration "line-through"}} subject]
-           [:span subject])])))))
+            (dom/span {:style {:text-decoration "line-through"}} subject)
+            (dom/span subject)))))))
 
 
 (defn form-submit
@@ -72,25 +71,23 @@
     om/IRenderState
     (render-state [_ {:keys [counter]}]
       (let [entries (:entries app)]
-        (html
-         [:section {:style {:margin-top "20px"
-                            :padding "5px"
-                            :border "1px solid #ddd"}}
-          [:section.title
-           [:strong "Task list:"]]
-          [:section.input
-           [:form {:on-submit #(form-submit app counter %)}
-            [:input {:type "text"
-                     :name "subject"
-                     :placeholder "Write your task name..."}]
-            [:input {:type "submit"
-                     :defaultValue "Foo"}]]]
-          [:section.list {:style {:margin-top "10px"}}
-           (if (empty? entries)
-             [:span "No items on the task list..."]
-             [:ul (for [item entries]
-                    (om/build taskitem item {:key :id}))])]])))))
-
+        (dom/section {:style {:margin-top "20px"
+                              :padding "5px"
+                              :border "1px solid #ddd"}}
+          (dom/section {:class "title"}
+            (dom/strong "Task list:"))
+          (dom/section {:class "input"}
+            (dom/form {:on-submit #(form-submit app counter %)}
+              (dom/input {:type "text"
+                          :name "subject"
+                          :placeholder "Write your task name..."})
+              (dom/input {:type "submit"
+                          :default-value "Foo"}))
+            (dom/section {:class "list" :style {:margin-top "10px"}}
+              (if (empty? entries)
+                (dom/span "No items on the task list...")
+                (apply dom/ul (for [item entries]
+                                (om/build taskitem item {:key :id})))))))))))
 
 (defn do-undo
   [app]
@@ -107,12 +104,13 @@
   (reify
     om/IRender
     (render [_]
-      (html
-       [:section.undo {:style {:padding "5px"
-                               :border "1px solid #ddd"}}
-        [:section.buttons
-         [:input {:type "button" :default-value "Undo"
-                  :on-click (fn [_] (do-undo app))}]]]))))
+      (dom/section {:class "undo"
+                    :style {:padding "5px"
+                            :border "1px solid #ddd"}}
+        (dom/section {:class "buttons"}
+          (dom/input {:type "button"
+                      :default-value "Undo"
+                      :on-click (fn[_] (do-undo app))}))))))
 
 (let [undoel (gdom/getElement "undo")
       tasklistel (gdom/getElement "tasklist")]
