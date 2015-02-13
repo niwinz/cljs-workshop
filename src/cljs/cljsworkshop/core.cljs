@@ -23,8 +23,22 @@
                (fn [state]
                  (update-in state [:entries] conj n)))))))
 
-(defn taskitem
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Task Item Component
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn- render-taskitem
   [task owner]
+  (let [subject (:subject task)
+        completed? (:completed task)]
+    (dom/li {:on-click (fn [_] (om/transact! task :completed #(not %)))}
+      (if completed?
+        (dom/span {:style {:text-decoration "line-through"}} subject)
+        (dom/span subject)))))
+
+(defn taskitem
+  [state owner]
   (reify
     om/IDisplayName
     (display-name [_]
@@ -32,16 +46,15 @@
 
     om/IRender
     (render [_]
-      (let [subject (:subject task)
-            completed? (:completed task)]
-        (dom/li {:on-click (fn [_] (om/transact! task :completed #(not %)))}
-          (if completed?
-            (dom/span {:style {:text-decoration "line-through"}} subject)
-            (dom/span subject)))))))
+      (render-taskitem state owner))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Task List Component
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn form-submit
-  [app counter event]
+(defn- submit
+  "On tasklist form submit callback."
+  [state counter event]
   (.preventDefault event)
   (let [input (-> (.-target event)
                   (.querySelector "[name=subject]"))
@@ -55,10 +68,30 @@
     ;; Append the previously defined task
     ;; to the task list entries on global
     ;; state atom.
-    (om/transact! app :entries #(conj % task))))
+    (om/transact! state :entries #(conj % task))))
+
+(defn- render-tasklist
+  [state owner {:keys [counter] :as local}]
+  (dom/section {:style {:margin-top "20px"
+                        :padding "5px"
+                        :border "1px solid #ddd"}}
+    (dom/section {:class "title"}
+      (dom/strong "Task list:"))
+    (dom/section {:class "input"}
+      (dom/form {:on-submit #(submit state counter %)}
+        (dom/input {:type "text"
+                    :name "subject"
+                    :placeholder "Write your task name..."})
+        (dom/input {:type "submit"
+                    :default-value "Foo"}))
+      (dom/section {:class "list" :style {:margin-top "10px"}}
+        (if-let [entries (seq (:entries state))]
+          (apply dom/ul (for [item entries]
+                          (om/build taskitem item {:key :id})))
+          (dom/span "No items on the task list..."))))))
 
 (defn tasklist
-  [app owner]
+  [state owner]
   (reify
     om/IDisplayName
     (display-name [_]
@@ -69,38 +102,25 @@
       {:counter (atom 1)})
 
     om/IRenderState
-    (render-state [_ {:keys [counter]}]
-      (let [entries (:entries app)]
-        (dom/section {:style {:margin-top "20px"
-                              :padding "5px"
-                              :border "1px solid #ddd"}}
-          (dom/section {:class "title"}
-            (dom/strong "Task list:"))
-          (dom/section {:class "input"}
-            (dom/form {:on-submit #(form-submit app counter %)}
-              (dom/input {:type "text"
-                          :name "subject"
-                          :placeholder "Write your task name..."})
-              (dom/input {:type "submit"
-                          :default-value "Foo"}))
-            (dom/section {:class "list" :style {:margin-top "10px"}}
-              (if (empty? entries)
-                (dom/span "No items on the task list...")
-                (apply dom/ul (for [item entries]
-                                (om/build taskitem item {:key :id})))))))))))
+    (render-state [_ local]
+      (render-tasklist state owner local))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Undo Component
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn do-undo
-  [app]
-  (when (> (count (:entries @app)) 1)
+  [state]
+  (when (> (count (:entries @state)) 1)
     ;; remove the last spapshot from the undo list.
-    (om/transact! app :entries pop)
+    (om/transact! state :entries pop)
 
     ;; Restore the last snapshot into tasklist
     ;; application state
     (reset! tasklist-state (last (:entries @undo-state)))))
 
 (defn undo
-  [app owner]
+  [state owner]
   (reify
     om/IRender
     (render [_]
@@ -110,7 +130,7 @@
         (dom/section {:class "buttons"}
           (dom/input {:type "button"
                       :default-value "Undo"
-                      :on-click (fn[_] (do-undo app))}))))))
+                      :on-click (fn[_] (do-undo state))}))))))
 
 (let [undoel (gdom/getElement "undo")
       tasklistel (gdom/getElement "tasklist")]
