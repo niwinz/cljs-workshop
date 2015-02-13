@@ -11,6 +11,7 @@
 
                  ;; Frontend dependencies
                  [org.omcljs/om "0.8.8"]
+                 [prismatic/om-tools "0.3.10"]
                  [secretary "1.2.1"]
                  [org.clojure/clojurescript "0.0-2843"]
 
