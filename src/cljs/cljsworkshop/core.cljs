@@ -5,8 +5,8 @@
             [goog.dom :as gdom]
             [goog.events :as events]
             [cljs.core.async :refer [<! put! chan]]
-            [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.core :as om]
+            [om.dom :as dom]))
 
 (enable-console-print!)
 
@@ -25,10 +25,9 @@
 
     om/IRenderState
     (render-state [_ {:keys [message]}]
-      (html [:section
-             [:div message]
-             [:div (:message app)]]))))
-
+      (dom/section
+        (dom/div nil message)
+        (dom/div nil (:message app))))))
 
 (let [el (gdom/getElement "app")]
   (om/root mycomponent state {:target el}))
