@@ -25,6 +25,7 @@
   (let [results (js->clj results)]
     (reduce (fn [acc result]
               (str acc "<li>" result "</li>"))
+            ""
             (second results))))
 
 (defn do-jsonp
