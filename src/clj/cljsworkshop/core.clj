@@ -24,4 +24,3 @@
   [& args]
   (let [app (wrap-defaults app site-defaults)]
     (run-jetty {:ring-handler app :port 5050})))
-
