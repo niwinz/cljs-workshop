@@ -15,11 +15,11 @@
 
                  [cc.qbits/jet "0.7.8"]]
 
-  :plugins [[lein-ancient "0.6.10"]]
   :source-paths ["src/clj"]
 
   :main cljsworkshop.core
-  :plugins [[lein-cljsbuild "1.1.3"]]
+  :plugins [[lein-cljsbuild "1.1.3"]
+            [lein-ancient "0.6.10"]]
   :cljsbuild {:builds
               [{:id "app"
                 :source-paths ["src/cljs"]
